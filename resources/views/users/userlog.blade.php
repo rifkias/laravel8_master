@@ -2,6 +2,11 @@
 @push('css')
 <link rel="stylesheet" href="//cdn.datatables.net/1.10.7/css/jquery.dataTables.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<style>
+    .dataTables_filter{
+        display: none;
+    }
+</style>
 @endpush
 @push('script')
 <script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
@@ -12,36 +17,14 @@
     // Date range filter
         minDateFilter = "";
         maxDateFilter = "";
-
-        var DateFilterFunction = (function (oSettings, aData, iDataIndex) {
-            var dateStart = parseDateValue(minDateFilter);
-            var dateEnd = parseDateValue(maxDateFilter);
-            //Kolom tanggal yang akan kita gunakan berada dalam urutan 2, karena dihitung mulai dari 0
-            //nama depan = 0
-            //nama belakang = 1
-            //tanggal terdaftar =2
-            var evalDate = parseDateValue(aData[3]);
-            if ( ( isNaN( dateStart ) && isNaN( dateEnd ) ) ||
-                ( isNaN( dateStart ) && evalDate <= dateEnd ) ||
-                ( dateStart <= evalDate && isNaN( dateEnd ) ) ||
-                ( dateStart <= evalDate && evalDate <= dateEnd ) )
-            {
-                return true;
-            }
-            return false;
-        });
-        function parseDateValue(rawDate) {
-            console.log(rawDate);
-            var dateArray= rawDate.split("-");
-            var parsedDate= new Date(dateArray[2], parseInt(dateArray[1])-1, dateArray[0]);  // -1 because months are from 0 to 11
-            return parsedDate;
-        }
     $(document).ready(function() {
         aTable = $('#dataTables').DataTable({
             processing: true,
             serverSide: true,
             lengthChange:false,
             searching:true,
+            bfilter:false,
+            // pageLeght
             ajax: {
                 url:'/dashboard/profile/login-history',
                 data: function(d){
@@ -90,59 +73,34 @@
             maxDateFilter='';
             aTable.draw();
         });
-        // Datatable Debugger
-        // (function() {
-        //     var url = 'https://debug.datatables.net/bookmarklet/DT_Debug.js';
-        //     if (typeof DT_Debug != 'undefined') {
-        //         if (DT_Debug.instance !== null) {
-        //             DT_Debug.close();
-        //         } else {
-        //             new DT_Debug();
-        //         }
-        //     } else {
-        //         var n = document.createElement('script');
-        //         n.setAttribute('language', 'JavaScript');
-        //         n.setAttribute('src', url + '?rand=' + new Date().getTime());
-        //         document.body.appendChild(n);
-        //     }
-        // })();
     });
     // Search Script
     $('#filter_ip').on('keyup',function(event){
-        // console.log($(this).val());
         if(event.keyCode === 13){
             aTable.columns(1).search($(this).val()).draw();
         }
-        // aTable.draw();
-        // aTable.search($(this).val()).draw();
-
     });
     $('#filter_loc').on('keyup',function(event){
-        // console.log($(this).val());
         if(event.keyCode === 13){
             aTable.columns(2).search($(this).val()).draw();
         }
-        // aTable.search($(this).val()).draw();
-
     });
     $('#filter_loc').on('keyup',function(event){
-        // console.log($(this).val());
         if(event.keyCode === 13){
+            console.log($(this).val());
             aTable.columns(2).search($(this).val()).draw();
         }
-        // aTable.search($(this).val()).draw();
-
     });
     $('#filter_login_success').on('keyup',function(event){
-        // console.log($(this).val());
         if(event.keyCode === 13){
             aTable.columns(4).search($(this).val()).draw();
         }
-        // aTable.search($(this).val()).draw();
-
     });
     $('#filter_login_success').on('change',function(event){
         aTable.draw();
+    });
+    $('#filter_perpage').on('change',function(event){
+        aTable.page.len(parseInt($(this).find(":selected").val())).draw();
     });
     function isBlank(str){
         return (!str || str.length === 0 );
@@ -199,7 +157,19 @@
                             {{-- <input id="filter_login_success" type="text" class="form-control" name="filter_login_success" placeholder="Search by Location"> --}}
                         </div>
                     </div>
-
+                    <div class="col-sm-auto">
+                        <div class="form-group">
+                            <label for="filter_perpage">PerPage</label>
+                            <select id="filter_perpage" type="text" class="custom-select" name="filter_perpage">
+                                <option selected value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="-1">All</option>
+                            </select>
+                            {{-- <input id="filter_login_success" type="text" class="form-control" name="filter_login_success" placeholder="Search by Location"> --}}
+                        </div>
+                    </div>
                     {{-- <div class="col-sm-auto">
                         <div class="form-group" style="width: 200px;">
                             <label for="filter_date">Login At</label>

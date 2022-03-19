@@ -74,6 +74,7 @@ class HomeController extends Controller
     {
         // dd($request->all(),$request->has('ip'));
         $users = User::findOrFail(Auth::user()->id)->authentications()->get();
+        // dd($users);
         return Datatables::of($users)
         ->addIndexColumn()
         ->removeColumn('id')
@@ -104,7 +105,8 @@ class HomeController extends Controller
                         $date = explode("-",$request->login_time);
                         $start = str_replace("/","-",$date[0]);
                         $end = str_replace("/","-",$date[1]);
-                        if((strtotime($row['login_at']) >= strtotime($start)) && strtotime($row['login_at']) <= strtotime($end)){
+                        $curDate = explode("T",$row['login_at']);
+                        if((strtotime($curDate[0]) >= strtotime($start)) && strtotime($curDate[0]) <= strtotime($end)){
                             return true;
                         }else{
                             return false;
@@ -133,12 +135,5 @@ class HomeController extends Controller
     }
     private function isNullOrEmpty($str){
         return ($str === null || trim($str) === '');
-    }
-    private function checkInDateRange($startDate,$endDate,$value){
-        $start = strtotime($startDate);
-        $end = strtotime($endDate);
-        $val = strtotime($value);
-
-        return (($val >= $start) && ($val <= $end));
     }
 }
