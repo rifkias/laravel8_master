@@ -25,6 +25,8 @@
     <link type="text/css" href="{{asset('template/css/vendor-fontawesome-free.css')}}" rel="stylesheet">
     <link type="text/css" href="{{asset('template/css/vendor-fontawesome-free.rtl.css')}}" rel="stylesheet">
 
+    @stack('css')
+
 </head>
 
 <body class="layout-default">
@@ -83,6 +85,7 @@
 
     <!-- App Settings (safe to remove) -->
     {{-- <script src="{{asset('template/js/app-settings.js')}}"></script> --}}
+    @stack('script')
 
 
 

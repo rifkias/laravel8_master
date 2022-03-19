@@ -18,10 +18,12 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-Route::group(['as'=>'user.profile.','prefix'=>'/dashboard/profile'],function(){
-    Route::get('/',[HomeController::class,'profile'])->name('main');
-    Route::post('/edit',[HomeController::class,'profileEdit'])->name('edit');
-    Route::get('/history',[HomeController::class,'history'])->name('history');
+Route::prefix('dashboard')->group(function(){
+    Route::group(['as'=>'user.profile.','prefix'=>'/profile'],function(){
+        Route::get('/',[HomeController::class,'profile'])->name('main');
+        Route::post('/edit',[HomeController::class,'profileEdit'])->name('edit');
+        Route::get('/history',[HomeController::class,'history'])->name('history');
+        Route::get('/login-history',[HomeController::class,'loginHistory'])->name('loginHistory');
+    });
+    Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });
-
-Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
