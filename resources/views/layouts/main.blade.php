@@ -86,7 +86,7 @@
     <!-- App Settings (safe to remove) -->
     {{-- <script src="{{asset('template/js/app-settings.js')}}"></script> --}}
     @stack('script')
-
+    @include('layouts.alert');
 
 
 
