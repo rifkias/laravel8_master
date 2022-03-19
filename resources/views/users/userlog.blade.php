@@ -105,6 +105,13 @@
     function isBlank(str){
         return (!str || str.length === 0 );
     }
+    function resetSearch(){
+        $('#filter_ip').val('');
+        $('#filter_loc').val('');
+        $('#filter_login_time').val('');
+        $('#filter_login_success').prop('selectedIndex',0);
+        aTable.search('').columns().search('').draw();
+    }
     </script>
 @endpush
 @section('content')
@@ -178,7 +185,7 @@
                     </div> --}}
                 </div>
             </div>
-            <button class="btn bg-white border-left border-top border-top-sm-0 rounded-top-0 rounded-top-sm rounded-left-sm-0"><i class="material-icons text-primary icon-20pt">refresh</i></button>
+            <button onclick="resetSearch()" class="btn bg-white border-left border-top border-top-sm-0 rounded-top-0 rounded-top-sm rounded-left-sm-0"><i class="material-icons text-primary icon-20pt">refresh</i></button>
         </div>
 
 
