@@ -55,7 +55,13 @@
                     }
                     // return date;
                 }}
-            ]
+            ],
+            drawCallback:function(){
+                var rows  = this.fnGetData();
+                if(rows.length === 0){
+                    $('#clearLog').prop('disabled',true);
+                }
+            }
         });
         $('#filter_login_time').daterangepicker({
             opens:'left',
@@ -104,6 +110,22 @@
     });
     function isBlank(str){
         return (!str || str.length === 0 );
+    }
+    function clearUserLog(){
+        // alert('true');
+        Swal.fire({
+            title: 'Do you want to clear the log?',
+            showDenyButton: true,
+            // showCancelButton: true,
+            confirmButtonText: 'Yes',
+            denyButtonText: `No`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                document.getElementById('clear-history').submit();
+            }
+        })
+        // event.preventDefault();document.getElementById('clear-history').submit();
     }
     function resetSearch(){
         $('#filter_ip').val('');
@@ -186,6 +208,7 @@
                 </div>
             </div>
             <button onclick="resetSearch()" class="btn bg-white border-left border-top border-top-sm-0 rounded-top-0 rounded-top-sm rounded-left-sm-0"><i class="material-icons text-primary icon-20pt">refresh</i></button>
+            <button onclick="clearUserLog()" id="clearLog" class="btn bg-white border-left border-top border-top-sm-0 rounded-top-0 rounded-top-sm rounded-left-sm-0"><i class="material-icons text-primary icon-20pt">delete</i></button>
         </div>
 
 
@@ -218,4 +241,7 @@
         </div>
     </div>
 </div>
+<form action="/dashboard/profile/login-history/delete" method="POST"  id="clear-history">
+@csrf
+</form>
 @endsection

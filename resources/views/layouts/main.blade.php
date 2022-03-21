@@ -24,6 +24,8 @@
     <!-- Font Awesome FREE Icons -->
     <link type="text/css" href="{{asset('template/css/vendor-fontawesome-free.css')}}" rel="stylesheet">
     <link type="text/css" href="{{asset('template/css/vendor-fontawesome-free.rtl.css')}}" rel="stylesheet">
+    {{-- SweetAlert2 --}}
+    <link type="text/css" href="{{asset('template/vendor/sweetalert2/sweetalert2.min.css')}}" rel="stylesheet">
 
     @stack('css')
 
@@ -82,14 +84,12 @@
     <script src="{{asset('template/js/dropdown.js')}}"></script>
     <script src="{{asset('template/js/sidebar-mini.js')}}"></script>
     <script src="{{asset('template/js/app.js')}}"></script>
-
+    {{-- SweetAlert2 --}}
+    <script src="{{asset('/template/vendor/sweetalert2/sweetalert2.all.min.js')}}"></script>
     <!-- App Settings (safe to remove) -->
     {{-- <script src="{{asset('template/js/app-settings.js')}}"></script> --}}
     @stack('script')
     @include('layouts.alert');
-
-
-
 
 </body>
 

@@ -24,6 +24,7 @@ Route::prefix('dashboard')->group(function(){
         Route::post('/edit',[HomeController::class,'profileEdit'])->name('edit');
         Route::get('/history',[HomeController::class,'history'])->name('history');
         Route::get('/login-history',[HomeController::class,'loginHistory'])->name('loginHistory');
+        Route::post('/login-history/delete',[HomeController::class,'loginHistoryDelete'])->name('loginHistory.delete');
     });
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });

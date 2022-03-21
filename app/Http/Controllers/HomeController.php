@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use Auth,Log,Hash,Str;
+use Auth,Log,Hash,Str,Session;
+use Illuminate\Contracts\Session\Session as SessionSession;
 use Yajra\Datatables\Datatables;
 
 class HomeController extends Controller
@@ -59,21 +60,23 @@ class HomeController extends Controller
             ]);
         }
         $user = User::findOrFail(Auth::user()->id);
-
-        // dd($request->all());
-        return view('users.profile');
+        $user->name = $request->name;
+        if($request->password){
+            $user->password = Hash::make($request->password);
+        }
+        $user->save();
+        Session::flash('success','Data Berhasil Disimpan');
+        return redirect()->back();
     }
 
     public function history()
     {
-        // $this->data['']
-        // return view('users.userlog')->with($this->data);/
         return view('users.userlog');
     }
     public function loginHistory(Request $request)
     {
         // dd($request->all(),$request->has('ip'));
-        $users = User::findOrFail(Auth::user()->id)->authentications()->get();
+        $users = User::findOrFail(Auth::user()->id)->authentications()->where('cleared_by_user',0)->get();
         // dd($users);
         return Datatables::of($users)
         ->addIndexColumn()
@@ -132,6 +135,14 @@ class HomeController extends Controller
 
         ->make();
         // dd($users);
+    }
+    public function loginHistoryDelete()
+    {
+        User::findOrFail(Auth::user()->id)->authentications()->where('cleared_by_user',0)->update(
+            ['cleared_by_user' => 1]
+        );
+        Session::flash('success','Login History Has Been Clear');
+        return redirect()->back();
     }
     private function isNullOrEmpty($str){
         return ($str === null || trim($str) === '');
