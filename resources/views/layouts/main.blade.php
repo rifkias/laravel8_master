@@ -26,6 +26,9 @@
     <link type="text/css" href="{{asset('template/css/vendor-fontawesome-free.rtl.css')}}" rel="stylesheet">
     {{-- SweetAlert2 --}}
     <link type="text/css" href="{{asset('template/vendor/sweetalert2/sweetalert2.min.css')}}" rel="stylesheet">
+    {{-- Select2 --}}
+    <link type="text/css" href="{{asset('template/vendor/select2/select2.min.css')}}" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
 
     @stack('css')
 
@@ -34,7 +37,6 @@
 <body class="layout-default">
 
     <div class="preloader"></div>
-
     <!-- Header Layout -->
     <div class="mdk-header-layout js-mdk-header-layout">
 
@@ -86,11 +88,20 @@
     <script src="{{asset('template/js/app.js')}}"></script>
     {{-- SweetAlert2 --}}
     <script src="{{asset('/template/vendor/sweetalert2/sweetalert2.all.min.js')}}"></script>
+    {{-- Select2 --}}
+    <script src="{{asset('/template/vendor/select2/select2.min.js')}}"></script>
     <!-- App Settings (safe to remove) -->
     {{-- <script src="{{asset('template/js/app-settings.js')}}"></script> --}}
+    <script>
+         $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
     @stack('script')
-    @include('layouts.alert');
-
+    @include('layouts.alert')
+    @stack('modal')
 </body>
 
 </html>

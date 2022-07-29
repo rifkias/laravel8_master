@@ -1,14 +1,17 @@
+@php
+$explodeUrl = explode('/',$_SERVER['REQUEST_URI']);
+@endphp
 <div class="mdk-drawer  js-mdk-drawer" id="default-drawer" data-align="start">
     <div class="mdk-drawer__content">
         <div class="sidebar sidebar-light sidebar-left simplebar" data-simplebar>
             <div class="d-flex align-items-center sidebar-p-a border-bottom sidebar-account">
-                <a href="profile.html" class="flex d-flex align-items-center text-underline-0 text-body">
+                <a href="/dashboard/profile" class="flex d-flex align-items-center text-underline-0 text-body">
                     <span class="avatar mr-3">
                         <img src="{{asset('template/images/avatar/demi.png')}}" alt="avatar" class="avatar-img rounded-circle">
                     </span>
                     <span class="flex d-flex flex-column">
                         <strong>{{Auth::user()->name}}</strong>
-                        <small class="text-muted text-uppercase">Account Manager</small>
+                        <small class="text-muted text-uppercase">{{@Auth::user()->getRoleNames()[0] ? @Auth::user()->getRoleNames()[0] : @Auth::user()->getRoleNames()}}</small>
                     </span>
                 </a>
                 <div class="dropdown ml-auto">
@@ -29,36 +32,12 @@
             </div>
             <div class="sidebar-heading sidebar-m-t">Menu</div>
             <ul class="sidebar-menu">
-                <li class="sidebar-menu-item active open">
-                    <a class="sidebar-menu-button" data-toggle="collapse" href="#dashboards_menu">
+                <li class="sidebar-menu-item @if(@$explodeUrl[1] == 'dashboard' && count($explodeUrl) <= 2) active @endif">
+                    <a class="sidebar-menu-button" href="/dashboard">
                         <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">dvr</i>
                         <span class="sidebar-menu-text">Dashboards</span>
-                        <span class="ml-auto sidebar-menu-toggle-icon"></span>
                     </a>
-                    <ul class="sidebar-submenu collapse show " id="dashboards_menu">
-                        <li class="sidebar-menu-item">
-                            <a class="sidebar-menu-button" href="index.html">
-                                <span class="sidebar-menu-text">Default</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-menu-item active">
-                            <a class="sidebar-menu-button" href="dashboard-quick-access.html">
-                                <span class="sidebar-menu-text">Quick Access</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-menu-item">
-                            <a class="sidebar-menu-button" href="staff.html">
-                                <span class="sidebar-menu-text">CRM/Staff</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-menu-item">
-                            <a class="sidebar-menu-button" href="analytics.html">
-                                <span class="sidebar-menu-text">E-commerce</span>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
-
                 <li class="sidebar-menu-item">
                     <a class="sidebar-menu-button" data-toggle="collapse" href="#apps_menu">
                         <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">slideshow</i>
@@ -207,26 +186,31 @@
                     </ul>
                 </li>
 
-                <li class="sidebar-menu-item">
+                <li class="sidebar-menu-item @if(@$explodeUrl[1] == 'dashboard' && @$explodeUrl[2] == 'administrator') active open @endif">
                     <a class="sidebar-menu-button" data-toggle="collapse" href="#layouts_menu">
                         <i class="sidebar-menu-icon sidebar-menu-icon--left material-icons">view_compact</i>
-                        <span class="sidebar-menu-text">Layouts</span>
+                        <span class="sidebar-menu-text">Administrator</span>
                         <span class="ml-auto sidebar-menu-toggle-icon"></span>
                     </a>
                     <ul class="sidebar-submenu collapse" id="layouts_menu">
-                        <li class="sidebar-menu-item active">
-                            <a class="sidebar-menu-button" href="dashboard-quick-access.html">
-                                <span class="sidebar-menu-text">Default</span>
+                        <li class="sidebar-menu-item @if(@$explodeUrl[2] == 'administrator' && @$explodeUrl[3] == 'company') active @endif">
+                            <a class="sidebar-menu-button" href="/dashboard/administrator/company">
+                                <span class="sidebar-menu-text">Company</span>
                             </a>
                         </li>
-                        <li class="sidebar-menu-item">
-                            <a class="sidebar-menu-button" href="fluid-dashboard-quick-access.html">
-                                <span class="sidebar-menu-text">Full Width Navs</span>
+                        <li class="sidebar-menu-item @if(@$explodeUrl[2] == 'administrator' && @$explodeUrl[3] == 'role') active @endif ">
+                            <a class="sidebar-menu-button" href="/dashboard/administrator/role">
+                                <span class="sidebar-menu-text">Role</span>
                             </a>
                         </li>
-                        <li class="sidebar-menu-item">
-                            <a class="sidebar-menu-button" href="fixed-dashboard-quick-access.html">
-                                <span class="sidebar-menu-text">Fixed Navs</span>
+                        <li class="sidebar-menu-item @if(@$explodeUrl[2] == 'administrator' && @$explodeUrl[3] == 'permission') active @endif ">
+                            <a class="sidebar-menu-button" href="/dashboard/administrator/permission">
+                                <span class="sidebar-menu-text">Permission</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-menu-item @if(@$explodeUrl[2] == 'administrator' && @$explodeUrl[3] == 'users') active @endif ">
+                            <a class="sidebar-menu-button" href="/dashboard/administrator/users">
+                                <span class="sidebar-menu-text">Users</span>
                             </a>
                         </li>
                         <li class="sidebar-menu-item">
@@ -237,7 +221,7 @@
                     </ul>
                 </li>
             </ul>
-            <div class="sidebar-heading">UI Components</div>
+            {{-- <div class="sidebar-heading">UI Components</div>
             <div class="sidebar-block p-0">
                 <ul class="sidebar-menu" id="components_menu">
                     <li class="sidebar-menu-item">
@@ -344,12 +328,7 @@
                         <div class="progress-bar bg-success" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
-            </div>
-
-            <div class="sidebar-p-a">
-                <a href="https://themeforest.net/item/stack-admin-bootstrap-4-dashboard-template/22959011" class="btn btn-outline-primary btn-block">Purchase Stack &dollar;35</a>
-            </div>
-
+            </div> --}}
         </div>
     </div>
 </div>

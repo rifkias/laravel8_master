@@ -29,7 +29,11 @@ class HomeController extends Controller
     {
         $users = Auth::user()->authentications()->get();
         $this->data['users'] = $users;
-        // dd($users);
+        // $user = User::findOrFail(1)->first();
+        // $user->assignRole("superadmin");
+        // dd($user);
+        // dd(Auth::user()->getRoleNames());
+        // Auth::user()->assignPermission
         // Log::debug("This is an test DEBUG log event");
         return view('home')->with($this->data);
         // return view('layouts.auth');

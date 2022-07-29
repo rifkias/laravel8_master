@@ -7,7 +7,7 @@
 @if ($errors->any())
     @foreach($errors->all() as $error)
         <script>
-            toastr.error('{{$error}}', 'Warning!!');
+            toastr.warning('{{$error}}', 'Warning!!');
         </script>
     @endforeach
 @endif
@@ -21,5 +21,11 @@
 @if($message = Session::get('info'))
     <script>
         toastr.info('{{$message}}', 'Info!!');
+    </script>
+@endif
+
+@if($message = Session::get('warning'))
+    <script>
+        toastr.warning('{{$message}}', 'warning!!');
     </script>
 @endif

@@ -174,7 +174,7 @@
                         <div id="account_menu" class="dropdown-menu dropdown-menu-right">
                             <div class="dropdown-item-text dropdown-item-text--lh">
                                 <div><strong>{{Auth::user()->name}}</strong></div>
-                                <div>@adriandemian</div>
+                                <div></div>
                             </div>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/dashboard">Dashboard</a>
