@@ -16,7 +16,7 @@
     @include('layouts._breadcrumb',$breadcrumb)
 
     <div class="container-fluid page__container">
-        <form action="/dashboard/profile/edit" method="POST">
+        <form action="/dashboard/profile/edit" method="POST" enctype="multipart/form-data">
             @csrf
         <div class="card card-form">
             <div class="row no-gutters">
@@ -39,6 +39,58 @@
                             <div class="form-group">
                                 <label for="email">Email</label>
                                 <input id="email" type="email" class="form-control" placeholder="exmaple@email.com" disabled value="{{Auth::user()->email ?: old('email')}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group" id="phone_field">
+                                <label for="phone">Phone Number</label>
+                                <input type="text" required class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" id="phone" placeholder="" value="{{Auth::user()->phone_number ?: old('phone')}}" name="phone">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label for="mobile">Mobile</label>
+                            <input type="text" required class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" value="{{Auth::user()->mobile ?: old('mobile')}}" id="mobile" placeholder="" name="mobile" autocomplete="false">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group" id="gender_field">
+                                <label for="gender">Gender</label>
+                                <select name="gender" id="gender" class="form-control">
+                                    <option value="perempuan"  @if((Auth::user()->gender ?: old('gender')) == 'perempuan') selected @endif>Perempuan</option>
+                                    <option value="laki - laki" @if((Auth::user()->gender ?: old('gender')) == 'laki - laki') selected @endif>Laki - Laki</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group" id="status_field">
+                                <label for="status">Status</label>
+                                <select name="status" disabled id="status" class="form-control">
+                                    <option value="active"  @if((Auth::user()->status ?: old('status')) == 'active') selected @endif>Active</option>
+                                    <option value="deactive" @if((Auth::user()->status ?: old('status')) == 'deactive') selected @endif>Deactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Avatar</label>
+                                <div class="dz-clickable media align-items-center" data-toggle="dropzone" data-dropzone-url="http://" data-dropzone-clickable=".dz-clickable" data-dropzone-files='["{{asset('template/images/account-add-photo.svg')}}"]'>
+                                    <div class="dz-preview dz-file-preview dz-clickable mr-3">
+                                        <div class="avatar" style="width: 80px; height: 80px;">
+                                            <img @if(Auth::user()->picture) src="{{asset('userPict/'.Auth::user()->picture)}}" @else src="{{asset('template/images/account-add-photo.svg')}}" @endif class="avatar-img rounded" alt="..." data-dz-thumbnail>
+                                        </div>
+                                    </div>
+                                    <div class="media-body">
+                                        <div class="custom-file">
+                                            <input type="file" onchange="fileInput()" class="custom-file-input" id="picture" name="picture">
+                                            <label class="custom-file-label" for="picture">Choose file</label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -145,4 +197,17 @@
     </form>
     </div>
 </div>
+@push('script')
+    <script>
+        function fileInput(){
+            var fieldVal = $('#picture').val();
+            console.log(fieldVal);
+            fieldVal = fieldVal.replace("C:\\fakepath\\", "");
+            if (fieldVal != undefined || fieldVal != "") {
+                $(".custom-file-label").attr('data-content', fieldVal);
+                $(".custom-file-label").text(fieldVal);
+            }
+        }
+    </script>
+@endpush
 @endsection

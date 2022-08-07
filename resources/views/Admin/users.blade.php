@@ -14,6 +14,9 @@
 @push('script')
 <script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+ <!-- Dropzone -->
+ <script src="{{asset('template/vendor/dropzone.min.js')}}"></script>
+ <script src="{{asset('template/js/dropzone.js')}}"></script>
 <script>
     // Date range filter
         minDateFilter = "";
@@ -46,7 +49,7 @@
                 { data: 'email', name: 'email',autoWidth: true },
                 { data: 'role', name: 'role',autoWidth: true },
                 { data: 'company', name: 'company',autoWidth: true },
-                // { data: 'name', name: 'name',autoWidth: true },
+                { data: 'status', name: 'status',autoWidth: true },
                 { data: 'created_at', name: 'created_at',autoWidth: true, render: function (data, type, row) {//data
                     return moment(row.created_at).format('DD-MM-YYYY H:m:s');
                 } },
@@ -68,14 +71,12 @@
     $('#filter_perpage').on('change',function(event){
         aTable.page.len(parseInt($(this).find(":selected").val())).draw();
     });
-    function CheckedAll(){
-        if($('#checkAll').is(':checked') == true){
-            $(".permissionCheck").prop('checked', true);
-        }else{
-            $(".permissionCheck").prop('checked', false);
-        }
-        // console.log($("#checkAll:checked").length);
-    }
+    $('#filter_role').on('change',function(event){
+        aTable.columns(3).search($(this).val()).draw();
+    });
+    $('#filter_status').on('change',function(event){
+        aTable.columns(5).search($(this).val()).draw();
+    });
     function isBlank(str){
         return (!str || str.length === 0 );
     }
@@ -86,6 +87,9 @@
     }
     function resetSearch(){
         $('#filter_name').val('');
+        $('#filter_role').val('').change();
+        $('#filter_status').val('').change();
+        $('#filter_email').val('');
         aTable.search('').columns().search('').draw();
     }
     function submitForm() {
@@ -99,24 +103,30 @@
     }
     function ClearForm() {
         $('#formTitle').text('Create Data');
-        $('#roleName').val('').attr('disabled',false);
-        $('#password').val("").attr('required',true);
-        $('#password_field').show();
-        $(".permissionCheck").prop('checked', false);
+        $('#mainId').val('');
+        $('#email').val('').attr('disabled',false);
+        $('#password').val("").attr('required',false);
+        $('#name').val('').attr('disabled',false);
+        $('#company').val('').change();
+        $('#gender').val('').change();
+        $('#status').val('').change();
+        $('#mobile').val('').attr('disabled',false);
+        $('#phone').val('').attr('disabled',false);
+        $('#role').val('').change();
     }
     function ShowDetail(data) {
-        const arr = [];
-
-        $('#password_field').show();
         $('#mainId').val(data.id);
         $('#email').val(data.email).attr('disabled',false);
         $('#password').val("").attr('required',false);
         $('#name').val(data.name).attr('disabled',false);
         $('#company').val(data.company_id).change();
+        $('#gender').val(data.gender).change();
+        $('#status').val(data.status).change();
+        $('#mobile').val(data.mobile).attr('disabled',false);
+        $('#phone').val(data.phone_number).attr('disabled',false);
         if(data.roles[0]){
             $('#role').val(data.roles[0].name).change();
         }
-        $('#company').val(data.company_id).change();
         $('#formData').attr('action',this.link+'/update');
         $('#formTitle').text('Update Data');
         $('#modal-form').modal("show");
@@ -172,7 +182,6 @@
             },
             success:function(datas) {
                 ClearForm();
-                console.log(datas.data,datas.data.roles);
                 if(datas.status == 200){
                    ShowDetail(datas.data);
                 }else{
@@ -184,6 +193,15 @@
                 toastr.error('Ada Kesalahan Sistem, silakan hubungi pengembang sistem');
             }
         });
+    }
+    function fileInput(){
+        var fieldVal = $('#picture').val();
+        console.log(fieldVal);
+        fieldVal = fieldVal.replace("C:\\fakepath\\", "");
+        if (fieldVal != undefined || fieldVal != "") {
+            $(".custom-file-label").attr('data-content', fieldVal);
+            $(".custom-file-label").text(fieldVal);
+        }
     }
 </script>
 @endpush
@@ -199,7 +217,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="formData" method="POST">
+                    <form id="formData" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="mainId" id="mainId">
                             <div class="form-group">
@@ -214,8 +232,23 @@
                                 <label for="password">Password</label>
                                 <input type="password" required class="form-control" id="password" placeholder="" name="password">
                             </div>
-
-                            <div class="form-group">
+                            <div class="form-group" id="gender_field">
+                                <label for="gender">Gender</label>
+                                <select name="gender" id="gender" class="form-control">
+                                    <option value="" selected>Select Gender Option</option>
+                                    <option value="laki - laki" selected>Laki - Laki</option>
+                                    <option value="perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="phone_field">
+                                <label for="phone">Phone Number</label>
+                                <input type="text" maxlength="13" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" id="phone" placeholder="" name="phone">
+                            </div>
+                            <div class="form-group" id="mobile_field">
+                                <label for="mobile">Mobile</label>
+                                <input type="text" maxlength="13" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');" id="mobile" placeholder="" name="mobile">
+                            </div>
+                            <div class="form-group" id="role_field">
                                 <label for="role">Role</label>
                                 <select name="role" id="role" class="form-control">
                                     <option value="" selected>Select Role Option</option>
@@ -223,6 +256,21 @@
                                         <option value="{{$item->name}}">{{$item->name}}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="form-group" id="status_field">
+                                <label for="status">Status</label>
+                                <select name="status" id="status" class="form-control">
+                                    <option value="" selected>Select Status Option</option>
+                                    <option value="active">Active</option>
+                                    <option value="deactive">Deactive</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="picture_field">
+                                <label for="picture">Picture</label>
+                                <div class="custom-file">
+                                    <input type="file" onchange="fileInput()" class="custom-file-input" id="picture" name="picture">
+                                    <label class="custom-file-label" for="picture">Choose file</label>
+                                  </div>
                             </div>
                             @if(Auth::user()->company->company_shortname == 'SAS')
                             <div class="form-group">
@@ -235,17 +283,6 @@
                                 </select>
                             </div>
                             @endif
-                            <!-- <div class="form-group">
-                                <div class="flex">
-                                    <label for="checkAll">Check All</label><br>
-                                    <label for="checkAll" class="mb-0">Uncheck All</label>
-                                    <div class="custom-control custom-checkbox-toggle custom-control-inline mr-1">
-                                        <input type="checkbox" id="checkAll" onchange="CheckedAll()" value="true" name="checkAll" class="custom-control-input">
-                                        <label class="custom-control-label" for="checkAll">Yes</label>
-                                    </div>
-                                    <label for="checkAll" class="mb-0">Check All</label>
-                                </div>
-                            </div> -->
                             <div style="max-height:200px;overflow-y:scroll;">
                                 <div class="list-group">
 
@@ -254,6 +291,7 @@
                     </form>
                 </div> <!-- // END .modal-body -->
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-warning">Reset</button>
                     <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" onclick="submitForm()">Save changes</button>
                 </div>
@@ -308,6 +346,17 @@
                     </div>
                     <div class="col-sm-auto">
                         <div class="form-group">
+                            <label for="filter_status">Status</label>
+                            <select name="filter_status" id="filter_status" class="form-control">
+                                <option value="">Search By Status</option>
+                                <option value="active">Active</option>
+                                <option value="deactive">Deactive</option>
+                            </select>
+                            {{-- <input id="filter_role" type="text" class="form-control" name="filter_role" placeholder="Search by Role"> --}}
+                        </div>
+                    </div>
+                    <div class="col-sm-auto">
+                        <div class="form-group">
                             <label for="filter_perpage">PerPage</label>
                             <select id="filter_perpage" type="text" class="custom-select" name="filter_perpage">
                                 <option selected value="10">10</option>
@@ -337,6 +386,7 @@
                             <th>Email</th>
                             <th>Role</th>
                             <th>Company</th>
+                            <th>Status</th>
                             <th class="text-center">Created At</th>
                             <th class="text-center">Action</th>
                         </tr>

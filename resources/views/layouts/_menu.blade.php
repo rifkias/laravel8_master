@@ -7,7 +7,7 @@ $explodeUrl = explode('/',$_SERVER['REQUEST_URI']);
             <div class="d-flex align-items-center sidebar-p-a border-bottom sidebar-account">
                 <a href="/dashboard/profile" class="flex d-flex align-items-center text-underline-0 text-body">
                     <span class="avatar mr-3">
-                        <img src="{{asset('template/images/avatar/demi.png')}}" alt="avatar" class="avatar-img rounded-circle">
+                        <img @if(Auth::user()->picture) src="{{asset('userPict/'.Auth::user()->picture)}}" @else src="{{asset('template/images/avatar/guess.jpeg')}}" @endif alt="avatar" class="avatar-img rounded-circle">
                     </span>
                     <span class="flex d-flex flex-column">
                         <strong>{{Auth::user()->name}}</strong>
@@ -19,7 +19,6 @@ $explodeUrl = explode('/',$_SERVER['REQUEST_URI']);
                     <div class="dropdown-menu dropdown-menu-right">
                         <div class="dropdown-item-text dropdown-item-text--lh">
                             <div><strong>{{Auth::user()->name}}</strong></div>
-                            <div>@adriandemian</div>
                         </div>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/dashboard">Dashboard</a>

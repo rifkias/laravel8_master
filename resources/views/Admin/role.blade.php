@@ -31,8 +31,6 @@
             ajax: {
                 url:'/dashboard/administrator/role/get-role',
                 data: function(d){
-                    // d.ip = $('#filter_ip').val(),
-                    // d.loc = $('#filter_loc').val(),
                     d.login_time = $('#filter_login_time').val(),
                     d.login_success = $('#filter_login_success').find(":selected").val()
                 }

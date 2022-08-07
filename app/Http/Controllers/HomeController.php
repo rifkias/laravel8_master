@@ -7,6 +7,7 @@ use App\Models\User;
 use Auth,Log,Hash,Str,Session;
 use Illuminate\Contracts\Session\Session as SessionSession;
 use Yajra\Datatables\Datatables;
+use App\Http\Controllers\ApiLogController as ApiLog;
 
 class HomeController extends Controller
 {
@@ -17,6 +18,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
+        $this->ApiLog = new Apilog;
         $this->middleware('auth');
     }
 
@@ -49,6 +51,10 @@ class HomeController extends Controller
             $valid = request()->validate([
                 'name' => 'required',
                 'password' => 'required|min:8|confirmed',
+                'gender'=>'required',
+                'phone'=>'required|numeric|nullable',
+                'picture' => 'nullable|mimes:jpg,png,jpeg',
+                'mobile'=>'required|numeric|unique:users,mobile,'.Auth::user()->id.'|nullable',
                 'old_password' => [
                     'required',
                     function($attribute, $value, $fail){
@@ -61,10 +67,20 @@ class HomeController extends Controller
         }else{
             $valid = request()->validate([
                 'name' => 'required',
+                'gender'=>'required',
+                'phone'=>'required|numeric|nullable',
+                'picture' => 'nullable|mimes:jpg,png,jpeg',
+                'mobile'=>'required|numeric|unique:users,mobile,'.Auth::user()->id.'|nullable',
             ]);
         }
         $user = User::findOrFail(Auth::user()->id);
         $user->name = $request->name;
+        $user->mobile = $request->mobile;
+        $user->phone_number = $request->phone;
+        $user->gender = $request->gender;
+        if($request->picture){
+            $user->picture = $this->ApiLog->MoveFile($request->picture);
+        }
         if($request->password){
             $user->password = Hash::make($request->password);
         }

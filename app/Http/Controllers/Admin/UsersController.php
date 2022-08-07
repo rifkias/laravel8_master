@@ -37,19 +37,33 @@ class UsersController extends Controller
         if(Auth::user()->company->company_shortname != 'SAS'){
             $user = $user->where('company_id',Auth::user()->company_id);
         }
-        $datas = $user->get();
+        $datas = $user->with('roles')->get();
         // $datas = User::all()->except(Auth::id());
-        // dd($datas);
         return Datatables::of($datas)
+        /*
+        ->filter(function($query) use($request){
+            if($request->has('filter_role')){
+                $query->role($request->filter_role);
+            }
+        })
+        */
         ->addIndexColumn()
         ->removeColumn('id')
         ->addColumn('role',function($data){
+            // return @$data->roles[0]->name;
+            if(isset($data->roles[0])){
+                return @$data->roles[0]->name;
+            }else{
+                return '-';
+            }
+            /*
             $role = $data->getRoleNames();
             if(isset($role[0])){
                 return $role[0];
             }else{
                 return "-";
             }
+            */
             // return @$data->getRoleNames()[0]?: "-";
         })
         ->addColumn('company',function($data){
@@ -97,7 +111,11 @@ class UsersController extends Controller
                 'email' => 'required|unique:users,email|email',
                 'password' => 'required',
                 'role' => 'required',
-                'company'=>'required'
+                'company'=>'required',
+                'phone'=>'required|numeric|nullable',
+                'mobile'=>'required|numeric|unique:users,mobile|nullable',
+                'gender'=>'required',
+                'picture'=>'nullable|mimes:jpg,png,jpeg',
             ]);
             $company = $request->company;
         }else{
@@ -106,16 +124,29 @@ class UsersController extends Controller
                 'email' => 'required|unique:users,email|email',
                 'password' => 'required',
                 'role' => 'required',
+                'phone'=>'numeric|nullable',
+                'mobile'=>'numeric|unique:users,mobile|nullable',
+                'gender'=>'required',
+                'picture'=>'nullable|mimes:jpg,png,jpeg',
             ]);
             $company = Auth::user()->company_id;
+        }
+        if($request->picture){
+            $file = $this->ApiLog->MoveFile($request->picture);
+        }else{
+            $file = null;
         }
         $masuk = [
             'name'=>$request->name,
             'email'=>$request->email,
             'password'=>Hash::make($request->password),
-            'company_id'=>$company
+            'company_id'=>$company,
+            'phone_number'=>$request->phone,
+            'mobile'=>$request->mobile,
+            'gender'=>$request->gender,
+            'picture'=>$file,
+            'status'=>'active'
         ];
-        // dd($masuk);
         $user = User::create($masuk);
         $user->assignRole($request->role);
         Session::flash('success','Data Berhasil Ditambahkan');
@@ -164,7 +195,12 @@ class UsersController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|unique:users,email,'.$request->mainId.'|email',
             'role' => 'required',
-            'company'=>'required'
+            'company'=>'required',
+            'phone'=>'numeric|nullable',
+            'mobile'=>'numeric|unique:users,mobile,'.$request->mainId.'|nullable',
+            'gender'=>'required',
+            'status'=>'required',
+            'picture' => 'nullable|mimes:jpg,png,jpeg'
         ]);
         try {
              $data = User::with('roles')->findOrFail($request->mainId);
@@ -172,8 +208,15 @@ class UsersController extends Controller
             $data->name = $request->name;
             $data->email = $request->email;
             $data->company_id = $request->company;
+            $data->mobile = $request->mobile;
+            $data->phone_number = $request->phone;
+            $data->gender = $request->gender;
+            $data->status = $request->status;
             if($request->password){
                 $data->password = Hash::make($request->password);
+            }
+            if($request->picture){
+                $data->picture = $this->ApiLog->MoveFile($request->picture);
             }
             $data->save();
             $data->roles()->detach();
@@ -185,7 +228,7 @@ class UsersController extends Controller
             ];
             Session::flash('success','Data Berhasil diubah');
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
         }
 
             $this->ApiLog->ReturnResult(200,'Data Berhasil diubah',$data,'');

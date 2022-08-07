@@ -30,8 +30,11 @@ class ApiLogController extends Controller
             'error'=>$error
         ]);
     }
-    public function checkPermission($name = null)
+    public function MoveFile($file)
     {
-        # code...
+        $filename = time().'.'.$file->getClientOriginalExtension();
+        $location = 'userPict';
+        $file->move($location,$filename);
+        return $filename;
     }
 }

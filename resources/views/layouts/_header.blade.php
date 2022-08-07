@@ -166,7 +166,7 @@
                 <ul class="nav navbar-nav d-none d-sm-flex border-left navbar-height align-items-center">
                     <li class="nav-item dropdown">
                         <a href="#account_menu" class="nav-link dropdown-toggle" data-toggle="dropdown" data-caret="false">
-                            <img src="{{asset('template/images/avatar/demi.png')}}" class="rounded-circle" width="32" alt="Frontted">
+                            <img  @if(Auth::user()->picture) src="{{asset('userPict/'.Auth::user()->picture)}}" @else src="{{asset('template/images/avatar/guess.jpeg')}}" @endif class="rounded-circle" style="width:32px;height:32px;" alt="Frontted">
                             <span class="ml-1 d-flex-inline">
                                 <span class="text-light">{{Auth::user()->name}}</span>
                             </span>
